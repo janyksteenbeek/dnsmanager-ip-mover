@@ -3,7 +3,7 @@ use janyksteenbeek\dnsmanagerMigrator\DNSManager;
 
 require_once 'vendor/autoload.php';
 
-echo "Migrator started at " . date('d-m-Y H:i:s');
+echo "Migrator started at " . date('d-m-Y H:i:s') . PHP_EOL;
 
 $dnsmanager = new DNSManager(
     'app.dnsmanager.cc',
