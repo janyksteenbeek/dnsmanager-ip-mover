@@ -1,5 +1,4 @@
 <?php
-use janyksteenbeek\dnsmanagerMigrator\CMD;
 use janyksteenbeek\dnsmanagerMigrator\DNSManager;
 
 require_once 'vendor/autoload.php';
