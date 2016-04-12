@@ -1,0 +1,16 @@
+{
+    "name": "janyksteenbeek/dnsmanager-migrator",
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "license": "MIT License",
+    "authors": [
+        {
+            "name": "Janyk Steenbeek",
+            "email": "info@janyksteenbeek.nl"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"janyksteenbeek\\dnsmanagerMigrator\\": "src/"}
+    }
+}
