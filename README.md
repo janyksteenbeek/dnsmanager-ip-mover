@@ -11,7 +11,7 @@ php migrator.php
 
 This will update all existing DNS records for all the domains associated to your account.
 
-## dnsmanager? What the f$#@ is that?
+## dnsmanager? Whats that?
 
 [dnsmanager.cc][dnsmanager] is an awesome _free_ DNS hosting solution, which you can use to manage all your domain names with.
 Note they also have an awesome reseller function which allows you as a hosting company to use their service fully whitelabeled.
