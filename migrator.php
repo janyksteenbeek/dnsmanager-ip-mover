@@ -7,16 +7,16 @@ echo "Migrator started at " . date('d-m-Y H:i:s') . PHP_EOL;
 
 $dnsmanager = new DNSManager(
     'https://app.dnsmanager.io',
-    '4761b7a0-aac7-4198-ab55-51fcb7d5c881',
-    '5Hq28uWUqdN7MSJges12u4UoWKgK39hY',
+    'api-id',
+    'api-key',
     true
 );
 
-$oldIp = '185.114.226.82';
-$newIp = '136.144.131.121';
+$oldIp = '10.0.0.1';
+$newIp = '10.0.0.2';
 
 
-// updateDomains($dnsmanager, $oldIp, $newIp);
+updateDomains($dnsmanager, $oldIp, $newIp);
 
 if($dnsmanager->isReseller) {
     foreach($dnsmanager->getResellerUsers() as $user) {
@@ -25,7 +25,7 @@ if($dnsmanager->isReseller) {
 }
 
 function updateDomains($dnsmanager, $oldIp, $newIp, $resellerId = null) {
-    
+
     foreach($dnsmanager->getDomains($resellerId) as $domain) {
 
         foreach($dnsmanager->getDomainRecords($domain->id, $resellerId) as $record) {
