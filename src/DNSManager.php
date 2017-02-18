@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 class DNSManager {
 
     protected $client;
+    public $isReseller = false;
 
     /**
      * DNSManager constructor.
@@ -14,13 +15,16 @@ class DNSManager {
      * @param $domain
      * @param $apiId
      * @param $apiKey
+     * @param $isReseller bool
      */
-    public function __construct($domain, $apiId, $apiKey)
+    public function __construct($domain, $apiId, $apiKey, $isReseller = false)
     {
         $this->client = new Client([
-            'base_uri' => 'https://' . $domain . '/api/v1/',
+            'base_uri' => $domain . '/api/v1/',
             'auth' => [$apiId, $apiKey],
         ]);
+
+        $this->isReseller = $isReseller;
     }
 
     /**
@@ -28,7 +32,7 @@ class DNSManager {
      *
      * @return array
      */
-    public function getDomains()
+    public function getDomains($resellerId = null)
     {
         $domains = [];
         $pageCount = 0;
@@ -36,7 +40,7 @@ class DNSManager {
         do {
             $pageCount++;
 
-            $c = $this->client->get(sprintf('user/domains?perpage=50&page=%d', $pageCount));
+            $c = $this->client->get(sprintf('user/domains?perpage=50&page=%d', $pageCount) . ($resellerId ? '&reseller_user=' . $resellerId : null));
             $api = json_decode($c->getBody()->getContents());
 
             foreach($api->results as $domain) {
@@ -54,7 +58,7 @@ class DNSManager {
      * @param $domainId
      * @return array
      */
-    public function getDomainRecords($domainId)
+    public function getDomainRecords($domainId, $resellerId = null)
     {
         $records = [];
         $pageCount = 0;
@@ -62,7 +66,7 @@ class DNSManager {
         do {
             $pageCount++;
 
-            $c = $this->client->get(sprintf('user/domain/%d/records?perpage=50&page=%d', $domainId, $pageCount));
+            $c = $this->client->get(sprintf('user/domain/%d/records?perpage=50&page=%d', $domainId, $pageCount) . ($resellerId ? '&reseller_user=' . $resellerId : null));
             $api = json_decode($c->getBody()->getContents());
 
             foreach($api->results as $record) {
@@ -82,10 +86,10 @@ class DNSManager {
      * @param $newValue
      * @return bool
      */
-    public function updateRecord($domainId, $record, $oldValue, $newValue)
+    public function updateRecord($domainId, $record, $oldValue, $newValue, $resellerId = null)
     {
         try {
-            $c = $this->client->put(sprintf('user/domain/%d/record/%d', $domainId, $record->id), [
+            $c = $this->client->put(sprintf('user/domain/%d/record/%d', $domainId, $record->id) . ($resellerId ? '?reseller_user=' . $resellerId : null), [
                 'json' => [
                     'type' => $record->type,
                     'name' => $record->name,
@@ -99,5 +103,34 @@ class DNSManager {
         }
         
         return $c->getStatusCode() == 200;
+    }
+
+    
+    /**
+     * Get list with user IDs that are under your reseller.
+     *
+     * @return array
+     */
+    public function getResellerUsers() {
+        if(! $this->isReseller) {
+            return false;
+        }
+
+        $users = [];
+        $pageCount = 0;
+
+        do {
+            $pageCount++;
+
+            $c = $this->client->get(sprintf('reseller/users?perpage=50&page=%d', $pageCount));
+            $api = json_decode($c->getBody()->getContents());
+
+            foreach($api->results as $user) {
+                $users[] = $user->id;
+            }
+        } while(! empty($api->results));
+
+
+        return $users;
     }
 }
