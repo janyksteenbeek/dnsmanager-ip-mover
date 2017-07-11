@@ -1,5 +1,5 @@
 {
-    "name": "janyksteenbeek/dnsmanager-migrator",
+    "name": "janyksteenbeek/dnsmanager-ip-mover",
     "require": {
         "guzzlehttp/guzzle": "~6.0"
     },
