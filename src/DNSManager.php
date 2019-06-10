@@ -30,6 +30,7 @@ class DNSManager {
     /**
      * Get all domains for user.
      *
+     * @param null $resellerId
      * @return array
      */
     public function getDomains($resellerId = null)
@@ -56,6 +57,7 @@ class DNSManager {
      * Get all records associated to domain.
      *
      * @param $domainId
+     * @param null $resellerId
      * @return array
      */
     public function getDomainRecords($domainId, $resellerId = null)
@@ -84,6 +86,7 @@ class DNSManager {
      * @param $record
      * @param $oldValue
      * @param $newValue
+     * @param null $resellerId
      * @return bool
      */
     public function updateRecord($domainId, $record, $oldValue, $newValue, $resellerId = null)
@@ -102,6 +105,25 @@ class DNSManager {
             return false;
         }
         
+        return $c->getStatusCode() == 200;
+    }
+
+    /**
+     * Delete domain record.
+     *
+     * @param $domainId
+     * @param $record
+     * @param null $resellerId
+     * @return bool
+     */
+    public function deleteRecord($domainId, $record, $resellerId = null)
+    {
+        try {
+            $c = $this->client->delete(sprintf('user/domain/%d/record/%d', $domainId, $record->id) . ($resellerId ? '?reseller_user=' . $resellerId : null));
+        } catch (\Exception $e) {
+            return false;
+        }
+
         return $c->getStatusCode() == 200;
     }
 

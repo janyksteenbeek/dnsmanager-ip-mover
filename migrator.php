@@ -24,7 +24,7 @@ if($dnsmanager->isReseller) {
     }
 }
 
-function updateDomains($dnsmanager, $oldIp, $newIp, $resellerId = null) {
+function updateDomains(DNSManager $dnsmanager, $oldIp, $newIp, $resellerId = null) {
 
     foreach($dnsmanager->getDomains($resellerId) as $domain) {
 
