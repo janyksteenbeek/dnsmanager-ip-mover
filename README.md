@@ -18,7 +18,7 @@ Make sure you have filled in all the right details in the `remove_old_records.ph
 After that, please run the following command in your terminal:
 
 ``
-php remove_old_records
+php remove_old_records.php
 ``
 
 This will update all existing DNS records for all the domains associated to your account.
@@ -31,4 +31,4 @@ Note they also have an awesome reseller function which allows you as a hosting c
 
 [Check it out.][dnsmanager]
 
-[dnsmanager]: https://app.dnsmanager.cc
+[dnsmanager]: https://app.dnsmanager.io
