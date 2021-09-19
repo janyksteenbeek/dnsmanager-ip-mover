@@ -1,11 +1,12 @@
 <?php
-use janyksteenbeek\dnsmanagerMigrator\DNSManager;
 
 require_once 'vendor/autoload.php';
 
+use JanykSteenbeek\DNSManager\Mover\Client;
+
 echo "Old record remover started at " . date('d-m-Y H:i:s') . PHP_EOL;
 
-$dnsmanager = new DNSManager(
+$dnsmanager = new Client(
     'https://app.dnsmanager.io',
     'api-id',
     'api-key',
@@ -15,32 +16,31 @@ $dnsmanager = new DNSManager(
 $recordType = 'AAAA';
 $recordValue = '::1';
 
+echo "Removing \"${recordType}\" with value \"${recordValue}\"..." . PHP_EOL;
 
 updateDomains($dnsmanager, $recordType, $recordValue);
 
-if($dnsmanager->isReseller) {
-    foreach($dnsmanager->getResellerUsers() as $user) {
+if ($dnsmanager->isReseller()) {
+    foreach ($dnsmanager->getResellerUsers() as $user) {
         updateDomains($dnsmanager, $recordType, $recordValue, $user);
     }
 }
 
-function updateDomains(DNSManager $dnsmanager, $recordType, $recordValue, $resellerId = null) {
-
-    foreach($dnsmanager->getDomains($resellerId) as $domain) {
-
-        foreach($dnsmanager->getDomainRecords($domain->id, $resellerId) as $record) {
-            if($record->type != $recordType || $record->content != $recordValue) {
+function updateDomains(Client $client, string $recordType, string $recordValue, ?string $resellerId = null)
+{
+    foreach ($client->getDomains($resellerId) as $domain) {
+        foreach ($client->getDomainRecords($domain->id, $resellerId) as $record) {
+            if ($record->type !== $recordType || $record->content !== $recordValue) {
                 echo "Skipping " . $record->id . " for " . $domain->domain . ($resellerId ? ' (' . $resellerId . ')' : '') . PHP_EOL;
+
                 continue;
             }
 
-            if($dnsmanager->deleteRecord($domain->id, $record, $resellerId)) {
+            if ($client->deleteRecord($domain->id, $record, $resellerId)) {
                 echo "Deleted record " . $record->id . " for " . $domain->domain . ($resellerId ? ' (' . $resellerId . ')' : '') . PHP_EOL;
-            }
-            else {
+            } else {
                 echo "Could not delete record " . $record->id . "(" . $record->type . ") for domain " . $domain->domain . ($resellerId ? ' (' . $resellerId . ')' : '') . PHP_EOL;
             }
         }
-
     }
 }

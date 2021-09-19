@@ -1,41 +1,41 @@
 <?php
-use janyksteenbeek\dnsmanagerMigrator\DNSManager;
 
 require_once 'vendor/autoload.php';
 
-echo "Migrator started at " . date('d-m-Y H:i:s') . PHP_EOL;
+use JanykSteenbeek\DNSManager\Mover\Client;
 
-$dnsmanager = new DNSManager(
+echo "Mover started at " . date('d-m-Y H:i:s') . PHP_EOL;
+
+$client = new Client(
     'https://app.dnsmanager.io',
     'api-id',
     'api-key',
     true
 );
 
-$oldIp = '10.0.0.1';
-$newIp = '10.0.0.2';
+$oldValue = '10.0.0.1';
+$newValue = '10.0.0.2';
 
+echo "Replacing \"${oldValue}\" with \"${$newValue}\"..." . PHP_EOL;
 
-updateDomains($dnsmanager, $oldIp, $newIp);
+updateDomains($client, $oldValue, $newValue);
 
-if($dnsmanager->isReseller) {
-    foreach($dnsmanager->getResellerUsers() as $user) {
-        updateDomains($dnsmanager, $oldIp, $newIp, $user);
+if ($client->isReseller()) {
+    foreach ($client->getResellerUsers() as $user) {
+        updateDomains($client, $oldValue, $newValue, $user);
     }
 }
 
-function updateDomains(DNSManager $dnsmanager, $oldIp, $newIp, $resellerId = null) {
-
-    foreach($dnsmanager->getDomains($resellerId) as $domain) {
-
-        foreach($dnsmanager->getDomainRecords($domain->id, $resellerId) as $record) {
-            if($dnsmanager->updateRecord($domain->id, $record, $oldIp, $newIp, $resellerId)) {
+function updateDomains(Client $client, string $oldValue, $newValue, $resellerId = null)
+{
+    foreach ($client->getDomains($resellerId) as $domain) {
+        foreach ($client->getDomainRecords($domain->id, $resellerId) as $record) {
+            $updated = $client->updateRecord($domain->id, $record, $oldValue, $newValue, $resellerId);
+            if ($updated === true) {
                 echo "Updated record " . $record->id . " for " . $domain->domain . ($resellerId ? ' (' . $resellerId . ')' : '') . PHP_EOL;
-            }
-            else {
+            } elseif ($updated === false) {
                 echo "Could not update record " . $record->id . "(" . $record->type . ") for domain " . $domain->domain . ($resellerId ? ' (' . $resellerId . ')' : '') . PHP_EOL;
             }
         }
-
     }
 }

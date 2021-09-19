@@ -1,9 +1,14 @@
 {
     "name": "janyksteenbeek/dnsmanager-ip-mover",
+    "description": "Easily update old values in your DNSManager DNS records in bulk.",
     "require": {
-        "guzzlehttp/guzzle": "~6.0"
+        "php": "^8.0",
+        "guzzlehttp/guzzle": "^7.0"
     },
-    "license": "MIT License",
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "license": "MIT",
     "authors": [
         {
             "name": "Janyk Steenbeek",
@@ -11,6 +16,9 @@
         }
     ],
     "autoload": {
-        "psr-4": {"janyksteenbeek\\dnsmanagerMigrator\\": "src/"}
+        "psr-4": {"JanykSteenbeek\\DNSManager\\Mover\\": "src/"}
+    },
+    "scripts": {
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes ."
     }
 }
